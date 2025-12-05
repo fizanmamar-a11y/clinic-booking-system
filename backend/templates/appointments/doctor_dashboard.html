@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<h2>My Appointments</h2>
+
+{% include "_flash.html" %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Patient</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Reason</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for appt in appointments %}
+    <tr>
+      <td>{{ appt.patient.name }}</td>
+      <td>{{ appt.date }}</td>
+      <td>{{ appt.time }}</td>
+      <td>{{ appt.reason }}</td>
+      <td>{{ appt.status.value }}</td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="5">No appointments found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

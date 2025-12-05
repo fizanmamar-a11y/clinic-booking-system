@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Manage Appointments</h3>
+<table class="table table-hover mt-3">
+  <thead>
+    <tr>
+      <th>ID</th><th>Patient Name</th><th>Email</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in appointments %}
+    <tr>
+      <td>{{ a.id }}</td>
+      <td>{{ a.patient.name }}</td>
+      <td>{{ a.patient.email }}</td>
+      <td>{{ a.date }}</td>
+      <td>{{ a.time.strftime('%H:%M') }}</td>
+      <td><span class="badge text-bg-secondary">{{ a.status }}</span></td>
+      <td>
+        {% if a.status == 'pending' %}
+        <form action="{{ url_for('appointments.approve', appt_id=a.id) }}" method="post" class="d-inline">
+          <button class="btn btn-sm btn-success">Approve</button>
+        </form>
+        <form action="{{ url_for('appointments.reject', appt_id=a.id) }}" method="post" class="d-inline">
+          <button class="btn btn-sm btn-warning">Reject</button>
+        </form>
+        {% else %}
+          <span class="text-muted">No actions</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

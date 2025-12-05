@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8">
+    <h3>Book Appointment</h3>
+
+    {% include "_flash.html" %}
+
+    <form method="post" action="{{ url_for('appointments.book') }}">
+      {{ form.csrf_token }}
+
+      <div class="mb-3">
+        <label for="doctor_id" class="form-label">Doctor</label>
+        {{ form.doctor_id(class="form-select", id="doctor_id") }}
+        {% if form.doctor_id.errors %}
+          <div class="text-danger small">{{ form.doctor_id.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="date" class="form-label">{{ form.date.label.text }}</label>
+        {{ form.date(class="form-control", id="date") }}
+        {% if form.date.errors %}
+          <div class="text-danger small">{{ form.date.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="time" class="form-label">{{ form.time.label.text }}</label>
+        {{ form.time(class="form-control", id="time") }}
+        {% if form.time.errors %}
+          <div class="text-danger small">{{ form.time.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        <label for="reason" class="form-label">{{ form.reason.label.text }}</label>
+        {{ form.reason(class="form-control", id="reason", rows="3") }}
+        {% if form.reason.errors %}
+          <div class="text-danger small">{{ form.reason.errors[0] }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.submit(class="btn btn-success") }}
+        <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-secondary ms-2">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

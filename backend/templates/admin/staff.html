@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Staff Management</h3>
+<table class="table mt-3">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr></thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td>
+      <td>
+        <form method="post" class="d-inline">
+          <input type="hidden" name="user_id" value="{{ u.id }}">
+          <select name="role" class="form-select form-select-sm d-inline w-auto">
+            {% for r in roles %}
+              <option value="{{ r }}" {% if r == u.role %}selected{% endif %}>{{ r }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn btn-sm btn-primary">Update</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

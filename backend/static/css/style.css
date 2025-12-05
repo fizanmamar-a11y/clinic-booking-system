@@ -1,0 +1,102 @@
+/* General layout */
+body {
+  background-color: #f9fafb;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+h3, h4, h5 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Navbar */
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.nav-link i {
+  margin-right: 6px;
+}
+
+/* Flash messages */
+.alert {
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
+
+/* Tables */
+.table th, .table td {
+  vertical-align: middle;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f6f8fa;
+}
+
+/* Dashboard cards */
+.card {
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card h5 {
+  font-weight: 500;
+}
+
+.card .fs-4 {
+  font-weight: 700;
+}
+
+/* Badges for statuses */
+.badge {
+  padding: 0.5em 0.75em;
+  font-size: 0.85em;
+  border-radius: 6px;
+}
+
+.badge.bg-warning {
+  background-color: #f0ad4e !important;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-secondary {
+  background-color: #6c757d !important;
+}
+
+/* Calendar view */
+.table-bordered td {
+  vertical-align: top;
+  padding: 1rem;
+}
+
+.table-bordered td div {
+  margin-bottom: 0.5rem;
+  font-size: 0.9em;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 6px;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+}
+
+/* Smooth hover effects */
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}

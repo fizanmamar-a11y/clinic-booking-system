@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Appointments Calendar</h3>
+<div class="table-responsive">
+  <table class="table table-bordered text-center">
+    <thead>
+      <tr>
+        <th>Date</th><th>Appointments</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for date, items in appointments_by_date.items() %}
+      <tr>
+        <td>{{ date }}</td>
+        <td>
+          {% for a in items %}
+            <div class="mb-2">
+              <strong>{{ a.time.strftime('%H:%M') }}</strong> - {{ a.patient.name }} ({{ a.patient.email }})
+              <span class="badge bg-{{ 'warning' if a.status=='pending' else 'success' if a.status=='approved' else 'danger' }}">
+                {{ a.status }}
+              </span>
+            </div>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
