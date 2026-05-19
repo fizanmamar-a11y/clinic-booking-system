@@ -1,53 +1,85 @@
 {% extends "base.html" %}
-{% block title %}Book Appointment{% endblock %}
+{% block title %}Book Appointment - Clinic Booking{% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row justify-content-center">
   <div class="col-md-8">
-    <h3>Book Appointment</h3>
-
-    {% include "_flash.html" %}
-
-    <form method="post" action="{{ url_for('appointments.book') }}">
-      {{ form.csrf_token }}
-
-      <div class="mb-3">
-        <label for="doctor_id" class="form-label">Doctor</label>
-        {{ form.doctor_id(class="form-select", id="doctor_id") }}
-        {% if form.doctor_id.errors %}
-          <div class="text-danger small">{{ form.doctor_id.errors[0] }}</div>
-        {% endif %}
+    <div class="card shadow">
+      <div class="card-header bg-white py-3">
+        <h3 class="mb-0"><i class="fa-solid fa-calendar-plus text-primary me-2"></i>Book Appointment</h3>
       </div>
+      <div class="card-body p-4">
+        <form method="post" action="{{ url_for('appointments.book') }}">
+          {{ form.csrf_token }}
 
-      <div class="mb-3">
-        <label for="date" class="form-label">{{ form.date.label.text }}</label>
-        {{ form.date(class="form-control", id="date") }}
-        {% if form.date.errors %}
-          <div class="text-danger small">{{ form.date.errors[0] }}</div>
-        {% endif %}
-      </div>
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label for="doctor_id" class="form-label fw-bold">Select Doctor</label>
+              <select name="doctor_id" id="doctor_id" class="form-select form-select-lg" required>
+                <option value="" disabled selected>Choose a doctor...</option>
+                {% for d in doctors %}
+                  <option value="{{ d.id }}"
+                          data-specialty="{{ d.specialty or 'General' }}"
+                          data-bio="{{ d.bio or '' }}"
+                          data-image="{{ url_for('static', filename='images/' + (d.profile_image or 'default_doctor.jpg')) }}">
+                    {{ d.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              {% if form.doctor_id.errors %}
+                <div class="text-danger small mt-1">{{ form.doctor_id.errors[0] }}</div>
+              {% endif %}
 
-      <div class="mb-3">
-        <label for="time" class="form-label">{{ form.time.label.text }}</label>
-        {{ form.time(class="form-control", id="time") }}
-        {% if form.time.errors %}
-          <div class="text-danger small">{{ form.time.errors[0] }}</div>
-        {% endif %}
-      </div>
+              <!-- Doctor Info Card -->
+              <div id="doctor-info-card" class="card bg-light border-0 mt-3 d-none">
+                <div class="card-body d-flex align-items-center">
+                  <img id="info-image" src="" class="rounded-circle me-3 shadow-sm" width="80" height="80" style="object-fit: cover;">
+                  <div>
+                    <h6 class="fw-bold mb-1 text-primary" id="info-specialty"></h6>
+                    <p class="small text-muted mb-0" id="info-bio"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div class="mb-3">
-        <label for="reason" class="form-label">{{ form.reason.label.text }}</label>
-        {{ form.reason(class="form-control", id="reason", rows="3") }}
-        {% if form.reason.errors %}
-          <div class="text-danger small">{{ form.reason.errors[0] }}</div>
-        {% endif %}
-      </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="date" class="form-label fw-bold">Appointment Date</label>
+              {{ form.date(class="form-control", id="date", type="date") }}
+              {% if form.date.errors %}
+                <div class="text-danger small mt-1">{{ form.date.errors[0] }}</div>
+              {% endif %}
+            </div>
 
-      <div class="mb-3">
-        {{ form.submit(class="btn btn-success") }}
-        <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-secondary ms-2">Cancel</a>
+            <div class="col-md-6 mb-3">
+              <label for="time" class="form-label fw-bold">Preferred Time</label>
+              {{ form.time(class="form-control", id="time", type="time") }}
+              {% if form.time.errors %}
+                <div class="text-danger small mt-1">{{ form.time.errors[0] }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="reason" class="form-label fw-bold">Reason for Visit (Optional)</label>
+            {{ form.reason(class="form-control", id="reason", rows="3", placeholder="Briefly describe your symptoms or reason for the visit") }}
+            {% if form.reason.errors %}
+              <div class="text-danger small mt-1">{{ form.reason.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <a href="{{ url_for('appointments.list_appointments') }}" class="btn btn-outline-secondary me-2 px-4">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-5">
+              <i class="fa-solid fa-check me-2"></i> Confirm Booking
+            </button>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
   </div>
 </div>
 {% endblock %}

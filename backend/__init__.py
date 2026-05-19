@@ -31,6 +31,7 @@ def create_app():
     # Default route
     @app.route("/")
     def index():
-        return "<h3>Clinic Booking System</h3><p><a href='/auth/login'>Login</a></p>"
+        from flask import render_template
+        return render_template("index.html")
 
     return app

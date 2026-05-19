@@ -14,8 +14,8 @@ appt_bp = Blueprint("appointments", __name__, template_folder="../templates/appo
 def book():
     form = BookForm()
 
-    # Load doctors and set choices for SelectField
-    doctors = Doctor.query.order_by(Doctor.name).all()
+    # Load doctors and set choices for SelectField - ONLY ACTIVE DOCTORS
+    doctors = Doctor.query.filter_by(is_active=True).order_by(Doctor.name).all()
     form.doctor_id.choices = [(d.id, f"{d.name} — {d.specialty or 'General'}") for d in doctors]
 
     if form.validate_on_submit():
@@ -85,8 +85,8 @@ def cancel(appt_id):
 @appt_bp.route("/approve/<int:appt_id>", methods=["POST"])
 @login_required
 def approve(appt_id):
-    if not current_user.is_staff():
-        flash("Staff only.", "danger")
+    if not (current_user.is_staff() or current_user.is_doctor()):
+        flash("Access denied.", "danger")
         return redirect(url_for("appointments.list_appointments"))
     appt = Appointment.query.get_or_404(appt_id)
     appt.status = AppointmentStatus.APPROVED
@@ -99,8 +99,8 @@ def approve(appt_id):
 @appt_bp.route("/reject/<int:appt_id>", methods=["POST"])
 @login_required
 def reject(appt_id):
-    if not current_user.is_staff():
-        flash("Staff only.", "danger")
+    if not (current_user.is_staff() or current_user.is_doctor()):
+        flash("Access denied.", "danger")
         return redirect(url_for("appointments.list_appointments"))
     appt = Appointment.query.get_or_404(appt_id)
     appt.status = AppointmentStatus.REJECTED
@@ -144,11 +144,15 @@ def dashboard():
 @appt_bp.route("/calendar")
 @login_required
 def calendar():
-    if not current_user.is_staff():
-        flash("Staff only.", "danger")
+    if not (current_user.is_staff() or current_user.is_doctor()):
+        flash("Access denied.", "danger")
         return redirect(url_for("appointments.list_appointments"))
 
-    appointments = Appointment.query.order_by(Appointment.date, Appointment.time).all()
+    if current_user.is_staff():
+        appointments = Appointment.query.order_by(Appointment.date, Appointment.time).all()
+    else:
+        # Doctor sees only their own appointments
+        appointments = Appointment.query.filter_by(doctor_id=current_user.doctor.id).order_by(Appointment.date, Appointment.time).all()
     appointments_by_date = {}
     for a in appointments:
         appointments_by_date.setdefault(a.date, []).append(a)

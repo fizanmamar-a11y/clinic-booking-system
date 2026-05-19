@@ -1,35 +1,81 @@
 {% extends "base.html" %}
-{% block content %}
-<h5>Welcome, {{ current_user.name }}!</h5>   <!-- ✅ Added welcome message -->
+{% block title %}My Appointments - Clinic Booking{% endblock %}
 
-<div class="d-flex justify-content-between align-items-center">
-  <h3>Appointments</h3>
-  <a href="{{ url_for('appointments.book') }}" class="btn btn-primary">Book New</a>
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h3 class="mb-0">Your Appointments</h3>
+  <a href="{{ url_for('appointments.book') }}" class="btn btn-primary shadow-sm">
+    <i class="fa-solid fa-plus me-2"></i>Book New
+  </a>
 </div>
 
-<table class="table table-striped mt-3">
-  <thead>
-    <tr>
-      <th>ID</th><th>Date</th><th>Time</th><th>Status</th><th>Reason</th><th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for a in appointments %}
-    <tr>
-      <td>{{ a.id }}</td>
-      <td>{{ a.date }}</td>
-      <td>{{ a.time.strftime('%H:%M') }}</td>
-      <td><span class="badge text-bg-secondary">{{ a.status }}</span></td>
-      <td>{{ a.reason or '' }}</td>
-      <td>
-        {% if current_user.id == a.patient_id and a.status != 'canceled' %}
-          <form action="{{ url_for('appointments.cancel', appt_id=a.id) }}" method="post" class="d-inline">
-            <button class="btn btn-sm btn-outline-danger">Cancel</button>
-          </form>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Doctor</th>
+          <th>Reason</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>
+            <div class="fw-bold text-dark">{{ a.date.strftime('%b %d, %Y') }}</div>
+            <div class="small text-muted"><i class="fa-regular fa-clock me-1"></i>{{ a.time.strftime('%H:%M') }}</div>
+          </td>
+          <td>
+            <div class="fw-medium">{{ a.doctor.name }}</div>
+            <div class="small text-muted text-capitalize">{{ a.doctor.specialty or 'General' }}</div>
+          </td>
+          <td>
+            <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ a.reason or 'No reason provided' }}">
+              {{ a.reason or '<span class="text-muted italic">No reason</span>'|safe }}
+            </span>
+          </td>
+          <td>
+            {% if a.status == "pending" %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif a.status == "approved" %}
+              <span class="badge bg-success">Approved</span>
+            {% elif a.status == "canceled" %}
+              <span class="badge bg-danger">Canceled</span>
+            {% elif a.status == "rejected" %}
+              <span class="badge bg-danger">Rejected</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ a.status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            {% if current_user.id == a.patient_id and a.status != 'canceled' and a.status != 'rejected' %}
+              <form action="{{ url_for('appointments.cancel', appt_id=a.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel this appointment?')">
+                <button class="btn btn-sm btn-outline-danger">
+                  <i class="fa-solid fa-xmark me-1"></i> Cancel
+                </button>
+              </form>
+            {% else %}
+              <span class="text-muted small">No actions</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" class="text-center py-5">
+            <div class="text-muted mb-3">
+              <i class="fa-solid fa-calendar-xmark fa-3x opacity-25"></i>
+            </div>
+            <h5>No appointments found</h5>
+            <p class="text-muted mb-4">You haven't booked any appointments yet.</p>
+            <a href="{{ url_for('appointments.book') }}" class="btn btn-primary">Book Your First Appointment</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Manage Doctors - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+  <div class="col-md-6">
+    <h3 class="mb-1">Active Doctors</h3>
+    <p class="text-muted mb-0">Currently practicing medical staff.</p>
+  </div>
+  <div class="col-md-6 text-end">
+    <a href="{{ url_for('admin.alumni') }}" class="btn btn-outline-secondary me-2">
+      <i class="fa-solid fa-graduation-cap me-2"></i>View Alumni
+    </a>
+    <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+      <i class="fa-solid fa-plus me-2"></i>Add New Doctor
+    </button>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <div class="input-group">
+      <span class="input-group-text bg-light border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+      <input type="text" class="form-control bg-light border-0 table-search" data-target="doctors-table" placeholder="Search doctors by name or specialty...">
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" id="doctors-table">
+      <thead class="table-light">
+        <tr>
+          <th>Doctor Name</th>
+          <th>Specialty</th>
+          <th>Bio Snippet</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doctor in doctors %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <img src="{{ url_for('static', filename='images/' + (doctor.profile_image or 'default_doctor.jpg')) }}"
+                   class="rounded-circle me-3" width="40" height="40" alt="{{ doctor.name }}" style="object-fit: cover;">
+              <div>
+                <div class="fw-bold">{{ doctor.name }}</div>
+                <div class="small text-muted">{{ doctor.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge bg-primary bg-opacity-10 text-primary">{{ doctor.specialty }}</span></td>
+          <td>
+            <div class="small text-muted text-truncate" style="max-width: 250px;">
+              {{ doctor.bio or 'No bio provided' }}
+            </div>
+          </td>
+          <td class="text-end">
+            <form action="{{ url_for('admin.manage_doctors') }}" method="post" class="d-inline">
+              <input type="hidden" name="action" value="toggle_active">
+              <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+              <button type="submit" class="btn btn-sm btn-outline-warning" title="Move to Alumni">
+                <i class="fa-solid fa-box-archive"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center py-5">
+            <p class="text-muted mb-0">No doctor profiles configured.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addDoctorModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0">
+        <h5 class="modal-title fw-bold">Add New Doctor</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('admin.manage_doctors') }}" method="post">
+        <div class="modal-body">
+          <input type="hidden" name="action" value="add">
+          <div class="row mb-3">
+            <div class="col">
+              <label class="form-label fw-bold">Full Name</label>
+              <input type="text" name="name" class="form-control" placeholder="Dr. John Smith" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="doctor@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Leave blank for 'password123'">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Specialty</label>
+            <input type="text" name="specialty" class="form-control" placeholder="e.g. Cardiology" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Bio / Description</label>
+            <textarea name="bio" class="form-control" rows="3" placeholder="Briefly describe experience..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
