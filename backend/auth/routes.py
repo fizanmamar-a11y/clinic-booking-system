@@ -34,9 +34,10 @@ def login():
 
 def redirect_after_login(user):
     """Redirect user after login based on role."""
-    if hasattr(user, "is_admin") and user.is_admin():
-        return redirect(url_for("appointments.dashboard"))
+    if hasattr(user, "is_doctor") and user.is_doctor():
+        return redirect(url_for("appointments.doctor_dashboard"))
     if hasattr(user, "is_staff") and user.is_staff():
+        # Both staff and admin go to the same dashboard
         return redirect(url_for("appointments.dashboard"))
     return redirect(url_for("appointments.list_appointments"))
 
