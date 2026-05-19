@@ -1,35 +1,83 @@
 {% extends "base.html" %}
+{% block title %}Manage Appointments - Staff{% endblock %}
+
 {% block content %}
-<h3>Manage Appointments</h3>
-<table class="table table-hover mt-3">
-  <thead>
-    <tr>
-      <th>ID</th><th>Patient Name</th><th>Email</th><th>Date</th><th>Time</th><th>Status</th><th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for a in appointments %}
-    <tr>
-      <td>{{ a.id }}</td>
-      <td>{{ a.patient.name }}</td>
-      <td>{{ a.patient.email }}</td>
-      <td>{{ a.date }}</td>
-      <td>{{ a.time.strftime('%H:%M') }}</td>
-      <td><span class="badge text-bg-secondary">{{ a.status }}</span></td>
-      <td>
-        {% if a.status == 'pending' %}
-        <form action="{{ url_for('appointments.approve', appt_id=a.id) }}" method="post" class="d-inline">
-          <button class="btn btn-sm btn-success">Approve</button>
-        </form>
-        <form action="{{ url_for('appointments.reject', appt_id=a.id) }}" method="post" class="d-inline">
-          <button class="btn btn-sm btn-warning">Reject</button>
-        </form>
+<div class="mb-4">
+  <h3 class="mb-1">Manage Appointments</h3>
+  <p class="text-muted">Review and approve or reject patient appointment requests.</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Patient Info</th>
+          <th>Doctor</th>
+          <th>Date & Time</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td>
+            <div class="fw-bold">{{ a.patient.name }}</div>
+            <div class="small text-muted"><i class="fa-solid fa-envelope me-1"></i>{{ a.patient.email }}</div>
+          </td>
+          <td>
+             <div class="fw-medium">{{ a.doctor.name }}</div>
+          </td>
+          <td>
+            <div class="fw-bold text-dark">{{ a.date.strftime('%b %d, %Y') }}</div>
+            <div class="small text-muted"><i class="fa-regular fa-clock me-1"></i>{{ a.time.strftime('%H:%M') }}</div>
+          </td>
+          <td>
+            {% if a.status == "pending" %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif a.status == "approved" %}
+              <span class="badge bg-success">Approved</span>
+            {% elif a.status == "canceled" %}
+              <span class="badge bg-danger">Canceled</span>
+            {% elif a.status == "rejected" %}
+              <span class="badge bg-danger">Rejected</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ a.status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            {% if a.status == 'pending' %}
+            <div class="btn-group">
+              <form action="{{ url_for('appointments.approve', appt_id=a.id) }}" method="post" class="d-inline">
+                <button class="btn btn-sm btn-success px-3 me-1">
+                  <i class="fa-solid fa-check me-1"></i> Approve
+                </button>
+              </form>
+              <form action="{{ url_for('appointments.reject', appt_id=a.id) }}" method="post" class="d-inline">
+                <button class="btn btn-sm btn-outline-danger px-3">
+                  <i class="fa-solid fa-xmark me-1"></i> Reject
+                </button>
+              </form>
+            </div>
+            {% else %}
+              <span class="text-muted small">Processed</span>
+            {% endif %}
+          </td>
+        </tr>
         {% else %}
-          <span class="text-muted">No actions</span>
-        {% endif %}
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+        <tr>
+          <td colspan="5" class="text-center py-5">
+            <div class="text-muted mb-3">
+              <i class="fa-solid fa-inbox fa-3x opacity-25"></i>
+            </div>
+            <h5>No appointment requests</h5>
+            <p class="text-muted mb-0">Everything is caught up!</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

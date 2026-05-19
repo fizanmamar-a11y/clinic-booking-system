@@ -1,30 +1,70 @@
 {% extends "base.html" %}
+{% block title %}Appointments Calendar - Clinic Booking{% endblock %}
+
 {% block content %}
-<h3>Appointments Calendar</h3>
-<div class="table-responsive">
-  <table class="table table-bordered text-center">
-    <thead>
-      <tr>
-        <th>Date</th><th>Appointments</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for date, items in appointments_by_date.items() %}
-      <tr>
-        <td>{{ date }}</td>
-        <td>
-          {% for a in items %}
-            <div class="mb-2">
-              <strong>{{ a.time.strftime('%H:%M') }}</strong> - {{ a.patient.name }} ({{ a.patient.email }})
-              <span class="badge bg-{{ 'warning' if a.status=='pending' else 'success' if a.status=='approved' else 'danger' }}">
-                {{ a.status }}
-              </span>
+<div class="mb-4">
+  <h3 class="mb-1">Appointments Calendar</h3>
+  <p class="text-muted">Daily schedule of all clinic appointments.</p>
+</div>
+
+<div class="card border-0 shadow-sm overflow-hidden">
+  <div class="table-responsive">
+    <table class="table table-bordered mb-0">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 200px;">Date</th>
+          <th>Scheduled Appointments</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for date, items in appointments_by_date.items() %}
+        <tr>
+          <td class="bg-light bg-opacity-25 fw-bold text-primary py-3">
+            <i class="fa-solid fa-calendar-day me-2"></i>{{ date.strftime('%A, %b %d') }}
+          </td>
+          <td class="p-0">
+            <div class="list-group list-group-flush">
+              {% for a in items %}
+                <div class="list-group-item border-0 border-bottom p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <span class="badge bg-primary me-2">{{ a.time.strftime('%H:%M') }}</span>
+                      <span class="fw-medium">{{ a.patient.name }}</span>
+                      <span class="text-muted small mx-1">with</span>
+                      <span class="text-info fw-medium">{{ a.doctor.name }}</span>
+                    </div>
+                    <div>
+                      {% if a.status == "pending" %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                      {% elif a.status == "approved" %}
+                        <span class="badge bg-success">Approved</span>
+                      {% elif a.status == "canceled" %}
+                        <span class="badge bg-danger">Canceled</span>
+                      {% elif a.status == "rejected" %}
+                        <span class="badge bg-danger">Rejected</span>
+                      {% else %}
+                        <span class="badge bg-secondary">{{ a.status }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
             </div>
-          {% endfor %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2" class="text-center py-5">
+            <div class="text-muted mb-3">
+              <i class="fa-solid fa-calendar-check fa-3x opacity-25"></i>
+            </div>
+            <h5>No appointments scheduled</h5>
+            <p class="text-muted mb-0">The calendar is currently empty.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
