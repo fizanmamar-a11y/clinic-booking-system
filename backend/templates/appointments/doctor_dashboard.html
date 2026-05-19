@@ -1,35 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Doctor Dashboard{% endblock %}
+{% block title %}Doctor Dashboard - Clinic Booking{% endblock %}
 
 {% block content %}
-<h2>My Appointments</h2>
+<div class="mb-4">
+  <h3 class="mb-1">My Patient Appointments</h3>
+  <p class="text-muted">View and manage your upcoming consultations.</p>
+</div>
 
-{% include "_flash.html" %}
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Patient</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Reason</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for appt in appointments %}
-    <tr>
-      <td>{{ appt.patient.name }}</td>
-      <td>{{ appt.date }}</td>
-      <td>{{ appt.time }}</td>
-      <td>{{ appt.reason }}</td>
-      <td>{{ appt.status.value }}</td>
-    </tr>
-    {% else %}
-    <tr>
-      <td colspan="5">No appointments found.</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Patient Name</th>
+          <th>Date & Time</th>
+          <th>Reason for Visit</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td>
+            <div class="fw-bold">{{ appt.patient.name }}</div>
+            <div class="small text-muted">{{ appt.patient.email }}</div>
+          </td>
+          <td>
+            <div class="fw-bold text-dark">{{ appt.date.strftime('%b %d, %Y') }}</div>
+            <div class="small text-muted"><i class="fa-regular fa-clock me-1"></i>{{ appt.time.strftime('%H:%M') }}</div>
+          </td>
+          <td>
+            <span class="text-truncate d-inline-block" style="max-width: 250px;" title="{{ appt.reason or 'No reason provided' }}">
+              {{ appt.reason or '<span class="text-muted small">No reason provided</span>'|safe }}
+            </span>
+          </td>
+          <td>
+            {% if appt.status == "pending" %}
+              <span class="badge bg-warning text-dark">Pending</span>
+            {% elif appt.status == "approved" %}
+              <span class="badge bg-success">Approved</span>
+            {% elif appt.status == "canceled" %}
+              <span class="badge bg-danger">Canceled</span>
+            {% elif appt.status == "rejected" %}
+              <span class="badge bg-danger">Rejected</span>
+            {% else %}
+              <span class="badge bg-secondary">{{ appt.status }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center py-5">
+            <div class="text-muted mb-3">
+              <i class="fa-solid fa-user-clock fa-3x opacity-25"></i>
+            </div>
+            <h5>No patients scheduled</h5>
+            <p class="text-muted mb-0">You don't have any upcoming appointments at the moment.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}
