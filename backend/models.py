@@ -44,6 +44,7 @@ class Doctor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     specialty = db.Column(db.String(150), nullable=True)
+    bio = db.Column(db.Text, nullable=True)
 
     # ✅ Link back to User
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True)
