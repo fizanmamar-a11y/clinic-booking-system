@@ -45,8 +45,6 @@ class Doctor(db.Model):
     name = db.Column(db.String(150), nullable=False)
     specialty = db.Column(db.String(150), nullable=True)
     bio = db.Column(db.Text, nullable=True)
-    profile_image = db.Column(db.String(255), default='default_doctor.jpg', nullable=False)
-    is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     # ✅ Link back to User
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), unique=True)

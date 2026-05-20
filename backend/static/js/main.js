@@ -86,14 +86,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const bio = selectedOption.dataset.bio;
             const specialty = selectedOption.dataset.specialty;
-            const image = selectedOption.dataset.image;
 
             const infoCard = document.getElementById('doctor-info-card');
             if (infoCard && (bio || specialty)) {
                 document.getElementById('info-specialty').textContent = specialty || 'General Practice';
                 document.getElementById('info-bio').textContent = bio || 'No biography available.';
-                const imgElement = document.getElementById('info-image');
-                if (imgElement) imgElement.src = image || '';
 
                 if (infoCard.classList.contains('d-none')) {
                     infoCard.classList.remove('d-none');

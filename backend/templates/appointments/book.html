@@ -15,30 +15,12 @@
           <div class="row">
             <div class="col-md-12 mb-3">
               <label for="doctor_id" class="form-label fw-bold">Select Doctor</label>
-              <select name="doctor_id" id="doctor_id" class="form-select form-select-lg" required>
-                <option value="" disabled selected>Choose a doctor...</option>
-                {% for d in doctors %}
-                  <option value="{{ d.id }}"
-                          data-specialty="{{ d.specialty or 'General' }}"
-                          data-bio="{{ d.bio or '' }}"
-                          data-image="{{ url_for('static', filename='images/' + (d.profile_image or 'default_doctor.jpg')) }}">
-                    {{ d.name }}
-                  </option>
-                {% endfor %}
-              </select>
+              {{ form.doctor_id(class="form-select form-select-lg", id="doctor_id") }}
               {% if form.doctor_id.errors %}
                 <div class="text-danger small mt-1">{{ form.doctor_id.errors[0] }}</div>
               {% endif %}
-
-              <!-- Doctor Info Card -->
-              <div id="doctor-info-card" class="card bg-light border-0 mt-3 d-none">
-                <div class="card-body d-flex align-items-center">
-                  <img id="info-image" src="" class="rounded-circle me-3 shadow-sm" width="80" height="80" style="object-fit: cover;">
-                  <div>
-                    <h6 class="fw-bold mb-1 text-primary" id="info-specialty"></h6>
-                    <p class="small text-muted mb-0" id="info-bio"></p>
-                  </div>
-                </div>
+              <div class="form-text mt-2">
+                <i class="fa-solid fa-circle-info me-1"></i> Choose a specialist for your needs.
               </div>
             </div>
           </div>

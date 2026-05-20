@@ -36,59 +36,34 @@ def manage_doctors():
     if request.method == "POST":
         action = request.form.get("action")
         if action == "add":
-            # Direct doctor creation (User + Doctor profile)
-            name = request.form.get("name")
-            email = request.form.get("email")
-            password = request.form.get("password")
+            user_id = request.form.get("user_id")
             specialty = request.form.get("specialty")
             bio = request.form.get("bio")
 
-            if User.query.filter_by(email=email).first():
-                flash("Email already exists.", "warning")
+            user = User.query.get_or_404(user_id)
+            if user.role != Role.DOCTOR:
+                flash("User must have Doctor role first.", "warning")
             else:
-                try:
-                    new_user = User(
-                        name=name,
-                        email=email,
-                        password_hash=generate_password_hash(password or "password123"),
-                        role=Role.DOCTOR # or 'staff' as per prompt, but let's use DOCTOR role for logic
-                    )
-                    db.session.add(new_user)
-                    db.session.flush()
-
-                    new_doctor = Doctor(
-                        name=name,
-                        specialty=specialty,
-                        bio=bio,
-                        user_id=new_user.id,
-                        is_active=True
-                    )
+                existing_doctor = Doctor.query.filter_by(user_id=user.id).first()
+                if existing_doctor:
+                    existing_doctor.specialty = specialty
+                    existing_doctor.bio = bio
+                    flash("Doctor profile updated.", "success")
+                else:
+                    new_doctor = Doctor(name=user.name, specialty=specialty, bio=bio, user_id=user.id)
                     db.session.add(new_doctor)
-                    db.session.commit()
-                    flash(f"Doctor {name} added successfully.", "success")
-                except Exception as e:
-                    db.session.rollback()
-                    flash(f"Error adding doctor: {str(e)}", "danger")
+                    flash("Doctor profile created.", "success")
+                db.session.commit()
 
-        elif action == "toggle_active":
+        elif action == "delete":
             doctor_id = request.form.get("doctor_id")
             doctor = Doctor.query.get_or_404(doctor_id)
-            doctor.is_active = not doctor.is_active
+            db.session.delete(doctor)
             db.session.commit()
-            status = "activated" if doctor.is_active else "moved to Alumni"
-            flash(f"Doctor {doctor.name} {status}.", "info")
+            flash("Doctor record removed (User remains).", "info")
 
-    # Only show active doctors here
-    doctors = Doctor.query.filter_by(is_active=True).all()
-    return render_template("admin/manage_doctors.html", doctors=doctors)
+    doctors = Doctor.query.all()
+    # Users with DOCTOR role who don't have a Doctor record yet
+    doctor_users = User.query.filter_by(role=Role.DOCTOR).all()
 
-@admin_bp.route("/alumni")
-@login_required
-def alumni():
-    if not is_admin_user():
-        flash("Admin only.", "danger")
-        return redirect(url_for("appointments.list_appointments"))
-
-    # Show inactive doctors
-    alumni_doctors = Doctor.query.filter_by(is_active=False).all()
-    return render_template("admin/alumni.html", doctors=alumni_doctors)
+    return render_template("admin/manage_doctors.html", doctors=doctors, doctor_users=doctor_users)
