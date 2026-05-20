@@ -14,8 +14,8 @@ appt_bp = Blueprint("appointments", __name__, template_folder="../templates/appo
 def book():
     form = BookForm()
 
-    # Load doctors and set choices for SelectField
-    doctors = Doctor.query.order_by(Doctor.name).all()
+    # Load doctors and set choices for SelectField - ONLY ACTIVE DOCTORS
+    doctors = Doctor.query.filter_by(is_active=True).order_by(Doctor.name).all()
     form.doctor_id.choices = [(d.id, f"{d.name} — {d.specialty or 'General'}") for d in doctors]
 
     if form.validate_on_submit():

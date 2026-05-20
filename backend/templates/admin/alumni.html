@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Alumni Doctors - Admin{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+  <div class="col-md-6">
+    <h3 class="mb-1"><i class="fa-solid fa-graduation-cap text-secondary me-2"></i>Alumni Doctors</h3>
+    <p class="text-muted mb-0">Historical records of past medical staff.</p>
+  </div>
+  <div class="col-md-6 text-end">
+    <a href="{{ url_for('admin.manage_doctors') }}" class="btn btn-outline-primary">
+      <i class="fa-solid fa-arrow-left me-2"></i>Back to Active Registry
+    </a>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white py-3">
+    <div class="input-group">
+      <span class="input-group-text bg-light border-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+      <input type="text" class="form-control bg-light border-0 table-search" data-target="alumni-table" placeholder="Search alumni...">
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0" id="alumni-table">
+      <thead class="table-light">
+        <tr>
+          <th>Doctor Name</th>
+          <th>Specialty</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doctor in doctors %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <img src="{{ url_for('static', filename='images/' + (doctor.profile_image or 'default_doctor.jpg')) }}"
+                   class="rounded-circle me-3 opacity-50" width="40" height="40" alt="{{ doctor.name }}" style="object-fit: cover;">
+              <div>
+                <div class="fw-bold text-muted">{{ doctor.name }}</div>
+                <div class="small text-muted">{{ doctor.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="badge bg-secondary bg-opacity-10 text-secondary">{{ doctor.specialty }}</span></td>
+          <td><span class="badge bg-light text-dark border">Inactive</span></td>
+          <td class="text-end">
+            <form action="{{ url_for('admin.manage_doctors') }}" method="post" class="d-inline">
+              <input type="hidden" name="action" value="toggle_active">
+              <input type="hidden" name="doctor_id" value="{{ doctor.id }}">
+              <button type="submit" class="btn btn-sm btn-outline-success" title="Reactivate Doctor">
+                <i class="fa-solid fa-rotate-left"></i> Reactivate
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="4" class="text-center py-5">
+            <p class="text-muted mb-0">No alumni records found.</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
